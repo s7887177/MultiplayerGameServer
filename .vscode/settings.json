@@ -1,4 +1,8 @@
 {
-    "appService.defaultWebAppToDeploy": "/subscriptions/4fec1ef6-0bb8-4f4c-a893-fc455d3ad75b/resourceGroups/appsvc_linux_centralus/providers/Microsoft.Web/sites/multiplayer-game-server-by-egg-testing-001",
-    "appService.deploySubpath": "."
+    "appService.deploySubpath": ".",
+    "appService.zipIgnorePattern": [
+        "node_modules{,/**}",
+        ".vscode{,/**}"
+    ],
+    "appService.defaultWebAppToDeploy": "/subscriptions/4fec1ef6-0bb8-4f4c-a893-fc455d3ad75b/resourceGroups/multiplayer-game-server-by-egg-testing-002_group/providers/Microsoft.Web/sites/multiplayer-server-app"
 }
