@@ -1,7 +1,7 @@
 const WebSocket = require('ws');
 var uuid = require('uuid-random');
 
-const wss = new WebSocket.WebSocketServer({port:8080}, ()=>{
+const wss = new WebSocket.WebSocketServer({port:8888}, ()=>{
     console.log('server started');
 });
 
