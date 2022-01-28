@@ -1,0 +1,4 @@
+{
+    "appService.defaultWebAppToDeploy": "/subscriptions/4fec1ef6-0bb8-4f4c-a893-fc455d3ad75b/resourceGroups/appsvc_linux_centralus/providers/Microsoft.Web/sites/multiplayer-game-server-by-egg-testing-001",
+    "appService.deploySubpath": "."
+}
