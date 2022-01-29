@@ -14,10 +14,10 @@ var playerData = {
 wss.on('connection', (client) => {
     client.id = uuid();
     playerData["" + client.id] = {id: client.id};
-    client.send(`{"id" : "${client.id}"}`);
+    client.send(`{"id" : "${client.id}`);
     client.on('message', (data) => {
         var dataJSON = JSON.parse(data);
-
+        
         console.log("Player Message: ");
         console.log(dataJSON);
     });
