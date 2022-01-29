@@ -7,14 +7,15 @@ const wss = new WebSocket.WebSocketServer({port:8080}, ()=>{
 
 
 
-var playerData = {
-    "type":  "playerData",
+var playerDatas = {
+    "type":  "playerDatas",
 }
 
 wss.on('connection', (client) => {
     client.id = uuid();
-    playerData["" + client.id] = {id: client.id};
-    client.send(`{"id" : "${client.id}`);
+    var playerData = {id: client.id};
+    playerDatas["" + client.id] = playerData;
+    client.send(playerData);
     client.on('message', (data) => {
         var dataJSON = JSON.parse(data);
         
