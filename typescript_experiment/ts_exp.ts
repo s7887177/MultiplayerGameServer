@@ -11,21 +11,24 @@ function getClientBySocket(webSocket : WebSocket) : Client | undefined{
 function addClient(webSocket: WebSocket) : Client{
     let rt = new Client(webSocket);
     clients.push(rt);
-    if(masterClient !== undefined){
+    if(masterClient == Client.NULL){
         masterClient = rt;
     }
     return rt;
 }
 function removeClient(webSocket: WebSocket): void{
     let client = getClientBySocket(webSocket);
-    if(client == undefined){
+    if(client == Client.NULL){
         throw new ReferenceError("Cannot find reference of target webSocket");
     }
     let index = clients.indexOf(client as Client);
-    if(masterClient === client && clients.length > 1){
-        masterClient = clients[0];
-    }
     clients.splice(index,1);
+
+    if(masterClient == client && clients.length > 0){
+        masterClient = clients[0];
+    } else if(clients.length == 0){
+        masterClient = Client.NULL;
+    }
 }
 
 // dirty code
@@ -91,11 +94,11 @@ function onMessage(this: WebSocket, data: RawData, isBinary: boolean){
             boardcastExceptOne(this, data.toString());
             break;
         case 'BulletHit':
-            
             let client = getClientBySocket(this);
             console.log(`BullitHit: ${client?.id}, ${masterClient?.id}`);
             if(client === masterClient){
                 boardcast(this, data.toString())
+                console.log(data.toString());
             };
             break;
         case 'OnPlayerExit':
@@ -142,10 +145,12 @@ class PlayerData{
 }
 
 class Client{
+    static NULL : Client;
     id: string;
     webSocket: WebSocket;
     player?: PlayerData;
     constructor(webSocket: WebSocket, player?: PlayerData){
+        
         this.webSocket = webSocket;
         this.id = uuid();
         this.player = player;
@@ -153,7 +158,8 @@ class Client{
 }
 
 function onClientClose(this: WebSocket, code: number, reason: Buffer) {
-    let args = {
+    console.log(`onClientClose`);
+        let args = {
         type:"PlayerExit",
         data:{
             id: getClientBySocket(this)?.id

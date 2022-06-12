@@ -12,21 +12,24 @@ function getClientBySocket(webSocket) {
 function addClient(webSocket) {
     var rt = new Client(webSocket);
     clients.push(rt);
-    if (masterClient !== undefined) {
+    if (masterClient == Client.NULL) {
         masterClient = rt;
     }
     return rt;
 }
 function removeClient(webSocket) {
     var client = getClientBySocket(webSocket);
-    if (client == undefined) {
+    if (client == Client.NULL) {
         throw new ReferenceError("Cannot find reference of target webSocket");
     }
     var index = clients.indexOf(client);
-    if (masterClient === client && clients.length > 1) {
+    clients.splice(index, 1);
+    if (masterClient == client && clients.length > 0) {
         masterClient = clients[0];
     }
-    clients.splice(index, 1);
+    else if (clients.length == 0) {
+        masterClient = Client.NULL;
+    }
 }
 // dirty code
 var options = {
@@ -94,6 +97,7 @@ function onMessage(data, isBinary) {
             console.log("BullitHit: ".concat(client === null || client === void 0 ? void 0 : client.id, ", ").concat(masterClient === null || masterClient === void 0 ? void 0 : masterClient.id));
             if (client === masterClient) {
                 boardcast(this, data.toString());
+                console.log(data.toString());
             }
             ;
             break;
@@ -148,6 +152,7 @@ var Client = /** @class */ (function () {
 }());
 function onClientClose(code, reason) {
     var _a;
+    console.log("onClientClose");
     var args = {
         type: "PlayerExit",
         data: {
