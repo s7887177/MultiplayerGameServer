@@ -85,7 +85,7 @@ function onMessage(this: WebSocket, data: RawData, isBinary: boolean){
             boardcastExceptOne(this, data.toString());
             break;
         case 'OnPlayerExit':
-            
+
             break;
         default:
             break;
@@ -106,12 +106,6 @@ function boardcastExceptOne(except: WebSocket, data: any,cb?:((err? : Error | un
         client.webSocket.send(data, cb);
     });
 }
-
-
-
-
-
-
 
 class Vector3{
     static zero: Vector3 = new Vector3(0,0,0);

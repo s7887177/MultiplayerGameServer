@@ -79,6 +79,11 @@ function onMessage(data, isBinary) {
         case 'MovePlayer':
             boardcastExceptOne(this, data.toString());
             break;
+        case 'SpawnBullet':
+            boardcastExceptOne(this, data.toString());
+            break;
+        case 'OnPlayerExit':
+            break;
         default:
             break;
     }
