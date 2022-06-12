@@ -1,15 +1,32 @@
 {
   "name": "multiplayergameserver",
   "version": "1.0.0",
-  "description": "",
   "main": "server.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node typescript_experiment/ts_exp.js"
   },
   "author": "Egg",
   "license": "ISC",
   "dependencies": {
+    "express": "^4.17.2",
+    "mongoose": "^6.1.8",
     "uuid-random": "^1.3.2",
     "ws": "^8.4.2"
-  }
+  },
+  "devDependencies": {
+    "@typestsc -w -p tsconfig.json/ws": "^8.2.2",
+    "dotenv": "^15.0.0",
+    "http": "0.0.1-security",
+    "nodemon": "^2.0.15"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/s7887177/MultiplayerGameServer.git"
+  },
+  "bugs": {
+    "url": "https://github.com/s7887177/MultiplayerGameServer/issues"
+  },
+  "homepage": "https://github.com/s7887177/MultiplayerGameServer#readme",
+  "description": ""
 }
