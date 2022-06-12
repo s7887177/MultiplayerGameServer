@@ -4,12 +4,16 @@ import { IncomingMessage } from 'http';
 // declaration
 let message = Symbol('message');
 let clients : Client[] = [];
+let masterClient : Client;
 function getClientBySocket(webSocket : WebSocket) : Client | undefined{
     return clients.find(client => client.webSocket == webSocket);
 }
 function addClient(webSocket: WebSocket) : Client{
     let rt = new Client(webSocket);
     clients.push(rt);
+    if(masterClient !== undefined){
+        masterClient = rt;
+    }
     return rt;
 }
 function removeClient(webSocket: WebSocket): void{
@@ -18,7 +22,10 @@ function removeClient(webSocket: WebSocket): void{
         throw new ReferenceError("Cannot find reference of target webSocket");
     }
     let index = clients.indexOf(client as Client);
-    clients.splice(index);
+    if(masterClient === client && clients.length > 1){
+        masterClient = clients[0];
+    }
+    clients.splice(index,1);
 }
 
 // dirty code
@@ -41,7 +48,6 @@ function onConnection(this: WebSocketServer, clientSocket: WebSocket, request: I
     clientSocket.on('close', onClientClose)
     clientSocket.on('message', onMessage)
     addClient(clientSocket);
-
     clientSocket.send(JSON.stringify({
         type: "InitPlayer",
         data: {
@@ -84,8 +90,15 @@ function onMessage(this: WebSocket, data: RawData, isBinary: boolean){
         case 'Fire':
             boardcastExceptOne(this, data.toString());
             break;
+        case 'BulletHit':
+            
+            let client = getClientBySocket(this);
+            console.log(`BullitHit: ${client?.id}, ${masterClient?.id}`);
+            if(client === masterClient){
+                boardcast(this, data.toString())
+            };
+            break;
         case 'OnPlayerExit':
-
             break;
         default:
             break;
@@ -95,7 +108,12 @@ function onClose(this: WebSocketServer){
     console.log('onClose');
     console.log(wss.clients.size);
 }
-
+function boardcast(except: WebSocket, data: any,cb?:((err? : Error | undefined) => void | undefined)): void{
+    clients
+    .forEach(client => {
+        client.webSocket.send(data, cb);
+    });
+} 
 function boardcastExceptOne(except: WebSocket, data: any,cb?:((err? : Error | undefined) => void | undefined)): void{
     // console.log('boardcastExceptOne');
     // console.log('wss.clients: '+ wss.clients);

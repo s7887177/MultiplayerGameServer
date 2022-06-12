@@ -5,12 +5,16 @@ var uuid = require('uuid-random');
 // declaration
 var message = Symbol('message');
 var clients = [];
+var masterClient;
 function getClientBySocket(webSocket) {
     return clients.find(function (client) { return client.webSocket == webSocket; });
 }
 function addClient(webSocket) {
     var rt = new Client(webSocket);
     clients.push(rt);
+    if (masterClient !== undefined) {
+        masterClient = rt;
+    }
     return rt;
 }
 function removeClient(webSocket) {
@@ -19,7 +23,10 @@ function removeClient(webSocket) {
         throw new ReferenceError("Cannot find reference of target webSocket");
     }
     var index = clients.indexOf(client);
-    clients.splice(index);
+    if (masterClient === client && clients.length > 1) {
+        masterClient = clients[0];
+    }
+    clients.splice(index, 1);
 }
 // dirty code
 var options = {
@@ -82,6 +89,14 @@ function onMessage(data, isBinary) {
         case 'Fire':
             boardcastExceptOne(this, data.toString());
             break;
+        case 'BulletHit':
+            var client = getClientBySocket(this);
+            console.log("BullitHit: ".concat(client === null || client === void 0 ? void 0 : client.id, ", ").concat(masterClient === null || masterClient === void 0 ? void 0 : masterClient.id));
+            if (client === masterClient) {
+                boardcast(this, data.toString());
+            }
+            ;
+            break;
         case 'OnPlayerExit':
             break;
         default:
@@ -91,6 +106,12 @@ function onMessage(data, isBinary) {
 function onClose() {
     console.log('onClose');
     console.log(wss.clients.size);
+}
+function boardcast(except, data, cb) {
+    clients
+        .forEach(function (client) {
+        client.webSocket.send(data, cb);
+    });
 }
 function boardcastExceptOne(except, data, cb) {
     // console.log('boardcastExceptOne');
